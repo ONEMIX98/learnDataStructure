@@ -15,6 +15,7 @@ TResult maxSubSeqSum3(int A[], int N){
   int i;
   TResult data;
   int ThisSum = 0;
+  int tempfirst = A[0];
   data.MaxSum = 0;
   data.first_num = A[0];
   data.last_num = A[N-1];
@@ -22,21 +23,26 @@ TResult maxSubSeqSum3(int A[], int N){
   for (i=0; i<N; i++)
   {
     ThisSum += A[i]; /*不断向当前子列和加入项*/
+    if(ThisSum > 0 && change_first_num){/*当前子列被归0后 && 加到的第一个正数*/
+      tempfirst = A[i];
+      change_first_num = 0; /*注意，一般来说if里的执行语句一定会改变if的判断语句*/
+    }
     if(ThisSum > data.MaxSum)
     {
-      data.MaxSum = ThisSum;
-      data.last_num = A[i];
-      if(change_first_num)/*当前子列和大于最大子列和且为一个新的子列*/
-      {
-        data.first_num = A[i];
+      data.MaxSum = ThisSum; /*若当前子列和大于最大子列和，则更新最大子列和*/
+      data.last_num = A[i]; /*只要最大子列和更新，则最后一个数一定随之更新*/
+      if(data.first_num != tempfirst){  /*tempfirst改变说明当前子列被归0，此时ThisSum > data.MaxSum, 即可更新first_num*/
+        data.first_num = tempfirst;
         change_first_num = 0;
       }
-    }//若当前子列和大于最大子列和，则更新最大子列和
+    }
     else if (ThisSum < 0)
     {
       ThisSum = 0; //若当前子列和为负数，则一定不会使之后的子列和增大，故舍弃之
-      change_first_num = 1;/*寻找新的子列，则第一个数可能改变*/
+      change_first_num = 1;/*寻找i不同的新的子列，则第一个数可能改变*/
     }
+
+
   }
   /*若序列为0和负数的组合，则返回0 0 0*/
   int have_zero = 0;
